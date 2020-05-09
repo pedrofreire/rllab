@@ -61,11 +61,13 @@ def explained_variance_1d(ypred, y):
 
 def to_onehot(ind, dim):
     ret = np.zeros(dim)
-    ret[ind] = 1
+    ret[ind] = 1.0
     return ret
 
 
 def to_onehot_n(inds, dim):
+    if hasattr(inds, 'shape') and inds.shape == ():
+        return to_onehot(inds, dim)
     ret = np.zeros((len(inds), dim))
     ret[np.arange(len(inds)), inds] = 1
     return ret

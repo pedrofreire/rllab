@@ -56,7 +56,7 @@ class NoVideoSchedule(object):
 
 
 class GymEnv(Env, Serializable):
-    def __init__(self, env_name, record_video=True, video_schedule=None, log_dir=None, record_log=True,
+    def __init__(self, env_name=None, env=None, record_video=True, video_schedule=None, log_dir=None, record_log=True,
                  force_reset=False):
         if log_dir is None:
             if logger.get_snapshot_dir() is None:
@@ -65,9 +65,10 @@ class GymEnv(Env, Serializable):
                 log_dir = os.path.join(logger.get_snapshot_dir(), "gym_log")
         Serializable.quick_init(self, locals())
 
-        env = gym.envs.make(env_name)
+        if env is None:
+            env = gym.envs.make(env_name)
         self.env = env
-        self.env_id = env.spec.id
+        # self.env_id = env.spec.id
 
         assert not (not record_log and record_video)
 
@@ -86,7 +87,10 @@ class GymEnv(Env, Serializable):
         logger.log("observation space: {}".format(self._observation_space))
         self._action_space = convert_gym_space(env.action_space)
         logger.log("action space: {}".format(self._action_space))
-        self._horizon = env.spec.tags['wrapper_config.TimeLimit.max_episode_steps']
+        if env.spec is not None:
+            self._horizon = env.spec.tags['wrapper_config.TimeLimit.max_episode_steps']
+        else:
+            self._horizon = env.horizon
         self._log_dir = log_dir
         self._force_reset = force_reset
 

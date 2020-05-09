@@ -10,6 +10,8 @@ from rllab.misc.overrides import overrides
 from sandbox.rocky.tf.spaces.discrete import Discrete
 import tensorflow as tf
 
+import numpy as np
+
 
 class CategoricalMLPPolicy(StochasticPolicy, LayersPowered, Serializable):
     def __init__(
@@ -73,13 +75,21 @@ class CategoricalMLPPolicy(StochasticPolicy, LayersPowered, Serializable):
     # the current policy
     @overrides
     def get_action(self, observation):
-        flat_obs = self.observation_space.flatten(observation)
+        if np.issubdtype(np.array(observation).dtype, np.integer):
+            flat_obs = self.observation_space.flatten_n(observation)
+        else:
+            flat_obs = observation
+
         prob = self._f_prob([flat_obs])[0]
         action = self.action_space.weighted_sample(prob)
         return action, dict(prob=prob)
 
     def get_actions(self, observations):
-        flat_obs = self.observation_space.flatten_n(observations)
+        if np.issubdtype(np.array(observations[0]).dtype, np.integer):
+            flat_obs = self.observation_space.flatten_n(observations)
+        else:
+            flat_obs = observations
+
         probs = self._f_prob(flat_obs)
         actions = list(map(self.action_space.weighted_sample, probs))
         return actions, dict(prob=probs)
