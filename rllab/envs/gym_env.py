@@ -88,7 +88,7 @@ class GymEnv(Env, Serializable):
         self._action_space = convert_gym_space(env.action_space)
         logger.log("action space: {}".format(self._action_space))
         if env.spec is not None:
-            self._horizon = env.spec.tags['wrapper_config.TimeLimit.max_episode_steps']
+            self._horizon = env.spec.max_episode_steps
         else:
             self._horizon = env.horizon
         self._log_dir = log_dir
