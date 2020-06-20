@@ -66,13 +66,16 @@ def stack_tensor_dict_list(tensor_dict_list):
     """
     keys = list(tensor_dict_list[0].keys())
     ret = dict()
-    for k in keys:
-        example = tensor_dict_list[0][k]
-        if isinstance(example, dict):
-            v = stack_tensor_dict_list([x[k] for x in tensor_dict_list])
-        else:
-            v = stack_tensor_list([x[k] for x in tensor_dict_list])
-        ret[k] = v
+    try:
+        for k in keys:
+            example = tensor_dict_list[0][k]
+            if isinstance(example, dict):
+                v = stack_tensor_dict_list([x[k] for x in tensor_dict_list])
+            else:
+                v = stack_tensor_list([x[k] for x in tensor_dict_list])
+            ret[k] = v
+    except Exception as err:
+        pass
     return ret
 
 
