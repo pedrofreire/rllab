@@ -38,7 +38,7 @@ class Box(Space):
 
     @property
     def flat_dim(self):
-        return np.prod(self.low.shape)
+        return np.prod(self.low.shape, dtype=np.int)
 
     @property
     def bounds(self):
